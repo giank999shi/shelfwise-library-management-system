@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Search Books')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Search Books</h1>
+  <p class="sub">Look up a book and check how many copies are available.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <form th:action="@{/books/search}" method="get" class="card form-row">
+    <div>
+      <label for="category">Search by</label>
+      <select id="category" name="category">
+        <option value="title" th:selected="${category == 'title'}">Title</option>
+        <option value="author" th:selected="${category == 'author'}">Author</option>
+        <option value="id" th:selected="${category == 'id'}">Book ID</option>
+      </select>
+    </div>
+    <div style="flex:1; min-width:200px">
+      <label for="keyword">Keyword</label>
+      <input id="keyword" name="keyword" type="text" th:value="${keyword}" style="width:100%" autofocus>
+    </div>
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  <div th:if="${searched}">
+    <p class="msg msg-err" th:if="${#lists.isEmpty(results)}">No results found.</p>
+    <table class="table" th:unless="${#lists.isEmpty(results)}">
+      <thead><tr><th>Cover</th><th>ID</th><th>Title</th><th>Author</th><th>Available</th></tr></thead>
+      <tbody>
+        <tr th:each="b : ${results}">
+          <td><img class="table-cover" th:if="${b.imagePath != null}" th:src="@{${b.imagePath}}" th:alt="${b.title} + ' cover'"><span th:unless="${b.imagePath != null}" class="muted">—</span></td>
+          <td th:text="${b.id}"></td>
+          <td th:text="${b.title}"></td>
+          <td th:text="${b.author}"></td>
+          <td>
+            <span class="badge" th:classappend="${b.availableCopies > 0} ? 'badge-ok' : 'badge-bad'"
+                  th:text="${b.availableCopies} + ' of ' + ${b.totalCopies}">1 of 1</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

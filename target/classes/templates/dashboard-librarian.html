@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Librarian Dashboard')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <p class="eyebrow">Welcome back</p>
+  <h1>Librarian Dashboard</h1>
+  <p class="sub">Signed in as <b th:text="${username}">librarian</b>. Today's library at a glance.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <div th:replace="~{fragments :: bookCatalog(${catalogBooks})}"></div>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-ic tone-gold"><span th:replace="~{fragments :: icon('swap')}"></span></span>
+      <div><b th:text="${activeCount}">0</b><span class="lbl">Active loans</span></div></div>
+    <div class="stat"><span class="stat-ic tone-amber"><span th:replace="~{fragments :: icon('clock')}"></span></span>
+      <div><b th:text="${dueSoonCount}">0</b><span class="lbl">Due soon</span></div></div>
+    <div class="stat"><span class="stat-ic tone-red"><span th:replace="~{fragments :: icon('alert')}"></span></span>
+      <div><b th:text="${overdueCount}">0</b><span class="lbl">Overdue</span></div></div>
+  </div>
+
+  <h2>Daily work</h2>
+  <div class="tiles">
+    <a class="tile" th:href="@{/staff/loans/borrow}"><span class="tile-ic tone-blue"><span th:replace="~{fragments :: icon('swap')}"></span></span>
+      <span class="tile-txt"><strong>Borrow / Return</strong><small>Process transactions</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/books/search}"><span class="tile-ic tone-gold"><span th:replace="~{fragments :: icon('search')}"></span></span>
+      <span class="tile-txt"><strong>Search Books</strong><small>By ID, title or author</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/staff/loans/overdue}"><span class="tile-ic tone-red"><span th:replace="~{fragments :: icon('alert')}"></span></span>
+      <span class="tile-txt"><strong>Overdue Books</strong><small>Overdue and due soon</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+  </div>
+
+  <h2>Records</h2>
+  <div class="tiles">
+    <a class="tile" th:href="@{/staff/books}"><span class="tile-ic tone-blue"><span th:replace="~{fragments :: icon('book')}"></span></span>
+      <span class="tile-txt"><strong>Manage Books</strong><small>Add, edit, delete</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/staff/members}"><span class="tile-ic tone-teal"><span th:replace="~{fragments :: icon('users')}"></span></span>
+      <span class="tile-txt"><strong>Student &amp; Teacher Records</strong><small>Add, edit, search</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/staff/history}"><span class="tile-ic tone-gold"><span th:replace="~{fragments :: icon('clock')}"></span></span>
+      <span class="tile-txt"><strong>Borrowing History</strong><small>Search by member or book</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/staff/reports}"><span class="tile-ic tone-blue"><span th:replace="~{fragments :: icon('chart')}"></span></span>
+      <span class="tile-txt"><strong>Reports</strong><small>Print or export CSV</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+  </div>
+</main>
+</body>
+</html>

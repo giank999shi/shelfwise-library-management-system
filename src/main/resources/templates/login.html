@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Sign in')}"></head>
+<body class="auth-body">
+<div class="auth">
+  <section th:replace="~{fragments :: authHero}"></section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <p class="eyebrow">Welcome back</p>
+      <h1>Sign in to Shelfwise</h1>
+      <p class="auth-sub">Enter your school library account details.</p>
+
+      <div class="alert alert-err" th:if="${param.error}">Invalid username or password.</div>
+      <div class="alert alert-ok" th:if="${param.logout}">You have been signed out.</div>
+
+      <form th:action="@{/login}" method="post">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" placeholder="Enter your username"
+               autocomplete="username" required autofocus>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Enter your password"
+               autocomplete="current-password" required>
+        <div class="auth-row">
+          <label class="check"><input type="checkbox" name="remember-me"> Remember me</label>
+          <a class="link" th:href="@{/forgot-password}">Forgot password?</a>
+        </div>
+        <button class="btn btn-block" type="submit">Sign in <span th:replace="~{fragments :: icon('arrow')}"></span></button>
+      </form>
+
+      <div class="demo-wrap" th:if="${demoAccounts}">
+        <p class="demo-title">Try a demo account</p>
+        <div class="demo-grid">
+          <button type="button" class="demo-card" data-u="admin" data-p="admin123"><b>Admin</b><small>admin / admin123</small></button>
+          <button type="button" class="demo-card" data-u="librarian" data-p="librarian123"><b>Librarian</b><small>librarian / librarian123</small></button>
+          <button type="button" class="demo-card" data-u="teacher" data-p="teacher123"><b>Teacher</b><small>teacher / teacher123</small></button>
+          <button type="button" class="demo-card" data-u="student" data-p="student123"><b>Student</b><small>student / student123</small></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  // Demo cards just fill in the form; you still press "Sign in".
+  document.querySelectorAll('.demo-card').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.getElementById('username').value = b.dataset.u;
+      document.getElementById('password').value = b.dataset.p;
+      document.getElementById('password').focus();
+    });
+  });
+</script>
+</body>
+</html>

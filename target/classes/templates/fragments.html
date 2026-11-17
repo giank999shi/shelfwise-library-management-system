@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' · Shelfwise'">Shelfwise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Icons: <span th:replace="~{fragments :: icon('book')}"></span> -->
+<svg th:fragment="icon(n)" class="ic" viewBox="0 0 24 24" aria-hidden="true">
+  <th:block th:switch="${n}">
+    <th:block th:case="'dashboard'"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></th:block>
+    <th:block th:case="'search'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></th:block>
+    <th:block th:case="'book'"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></th:block>
+    <th:block th:case="'library'"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></th:block>
+    <th:block th:case="'users'"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></th:block>
+    <th:block th:case="'swap'"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></th:block>
+    <th:block th:case="'alert'"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></th:block>
+    <th:block th:case="'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></th:block>
+    <th:block th:case="'chart'"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></th:block>
+    <th:block th:case="'key'"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></th:block>
+    <th:block th:case="'activity'"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></th:block>
+    <th:block th:case="'logout'"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></th:block>
+    <th:block th:case="'arrow'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></th:block>
+    <th:block th:case="'check'"><path d="M20 6 9 17l-5-5"/></th:block>
+  </th:block>
+</svg>
+
+<!-- Left sidebar (kept under the old name "topbar" so every page picks it up) -->
+<aside th:fragment="topbar" class="sidebar">
+  <a th:href="@{/dashboard}" class="logo">
+    <span class="logo-mark"><span th:replace="~{fragments :: icon('library')}"></span></span>
+    <span><b>Shelfwise</b><small>SCHOOL LIBRARY</small></span>
+  </a>
+
+  <nav class="nav">
+    <div class="nav-label">Menu</div>
+    <a th:href="@{/dashboard}" th:classappend="${currentPath == '/dashboard'} ? 'active'">
+      <span th:replace="~{fragments :: icon('dashboard')}"></span> Dashboard</a>
+    <a th:href="@{/books/search}" th:classappend="${currentPath != null and currentPath.startsWith('/books/search')} ? 'active'">
+      <span th:replace="~{fragments :: icon('search')}"></span> Search Books</a>
+    <a th:href="@{/my/history}" sec:authorize="hasAnyRole('TEACHER','STUDENT')"
+       th:classappend="${currentPath != null and currentPath.startsWith('/my/')} ? 'active'">
+      <span th:replace="~{fragments :: icon('clock')}"></span> My History</a>
+
+    <th:block sec:authorize="hasAnyRole('ADMIN','LIBRARIAN')">
+      <div class="nav-label">Library</div>
+      <a th:href="@{/staff/books}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/books')} ? 'active'">
+        <span th:replace="~{fragments :: icon('book')}"></span> Books</a>
+      <a th:href="@{/staff/members}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/members')} ? 'active'">
+        <span th:replace="~{fragments :: icon('users')}"></span> Members</a>
+      <a th:href="@{/staff/loans/borrow}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/loans/borrow')} ? 'active'">
+        <span th:replace="~{fragments :: icon('swap')}"></span> Borrow / Return</a>
+      <a th:href="@{/staff/loans/overdue}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/loans/overdue')} ? 'active'">
+        <span th:replace="~{fragments :: icon('alert')}"></span> Overdue</a>
+      <a th:href="@{/staff/history}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/history')} ? 'active'">
+        <span th:replace="~{fragments :: icon('clock')}"></span> History</a>
+      <a th:href="@{/staff/reports}" th:classappend="${currentPath != null and currentPath.startsWith('/staff/reports')} ? 'active'">
+        <span th:replace="~{fragments :: icon('chart')}"></span> Reports</a>
+    </th:block>
+
+    <th:block sec:authorize="hasRole('ADMIN')">
+      <div class="nav-label">Admin</div>
+      <a th:href="@{/admin/users}" th:classappend="${currentPath != null and currentPath.startsWith('/admin/users')} ? 'active'">
+        <span th:replace="~{fragments :: icon('key')}"></span> Accounts</a>
+      <a th:href="@{/admin/logs}" th:classappend="${currentPath != null and currentPath.startsWith('/admin/logs')} ? 'active'">
+        <span th:replace="~{fragments :: icon('activity')}"></span> Activity Logs</a>
+    </th:block>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-card">
+      <span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(#authentication.name, 0, 1))}">A</span>
+      <span>
+        <b sec:authentication="name">user</b>
+        <small sec:authorize="hasRole('ADMIN')">Administrator</small>
+        <small sec:authorize="hasRole('LIBRARIAN')">Librarian</small>
+        <small sec:authorize="hasRole('TEACHER')">Teacher</small>
+        <small sec:authorize="hasRole('STUDENT')">Student</small>
+      </span>
+    </div>
+    <!-- Flow M: ask for confirmation before logging out -->
+    <form th:action="@{/logout}" method="post" onsubmit="return confirm('Do you want to sign out?');">
+      <button type="submit" class="signout"><span th:replace="~{fragments :: icon('logout')}"></span> Sign out</button>
+    </form>
+  </div>
+</aside>
+
+<div th:fragment="messages">
+  <div class="msg msg-ok" th:if="${success}" th:text="${success}"></div>
+  <div class="msg msg-err" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<!-- Left brand panel used by the sign-in and forgot-password screens -->
+<section th:fragment="authHero" class="auth-hero">
+  <div class="hero-brand">
+    <span class="logo-mark"><span th:replace="~{fragments :: icon('library')}"></span></span>
+    <span><b>Shelfwise</b><small>SCHOOL LIBRARY</small></span>
+  </div>
+  <div class="hero-copy">
+    <span class="hero-tile"><span th:replace="~{fragments :: icon('library')}"></span></span>
+    <h2>A smarter library<br>for every learner.</h2>
+    <p>Manage books, support readers, and keep your whole school connected from one simple place.</p>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <span class="ring r1"></span><span class="ring r2"></span>
+    <span class="chip c1"><span th:replace="~{fragments :: icon('book')}"></span> Track every loan</span>
+    <span class="chip c2"><span th:replace="~{fragments :: icon('users')}"></span> Reader accounts</span>
+    <span class="book b-teal"></span><span class="book b-lav"></span><span class="book b-gold"></span>
+  </div>
+  <p class="hero-foot">Built for better learning, one book at a time.</p>
+</section>
+
+<table th:fragment="loanTable(loans, showMember)" class="table">
+  <thead>
+    <tr>
+      <th th:if="${showMember}">Member</th>
+      <th>Book</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:if="${#lists.isEmpty(loans)}"><td colspan="6" class="empty">Nothing to show.</td></tr>
+    <tr th:each="l : ${loans}">
+      <td th:if="${showMember}" th:text="${l.member.name}"></td>
+      <td th:text="${l.book.title}"></td>
+      <td th:text="${l.borrowDate}"></td>
+      <td th:text="${l.dueDate}"></td>
+      <td th:text="${l.returnDate} ?: '—'"></td>
+      <td>
+        <span class="badge"
+              th:classappend="${l.overdue} ? 'badge-bad' : (${l.dueSoon} ? 'badge-warn' : (${l.status.name() == 'RETURNED'} ? 'badge-ok' : ''))"
+              th:text="${l.overdue} ? 'Overdue' : (${l.dueSoon} ? 'Due soon' : (${l.status.name() == 'RETURNED'} ? 'Returned' : 'Borrowed'))">Borrowed</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<section th:fragment="bookCatalog(catalogBooks)" class="catalog-section">
+  <div class="page-head">
+    <div><h2>Available Books</h2><p class="sub">Browse the library collection. New books appear here after they are added.</p></div>
+    <a class="btn btn-ghost btn-sm" th:href="@{/books/search}">Advanced search</a>
+  </div>
+  <div class="catalog-toolbar">
+    <input type="search" id="catalogFilter" placeholder="Search by book title or author..." aria-label="Filter books" oninput="filterCatalogBooks()">
+    <span class="hint" th:text="${#lists.size(catalogBooks)} + ' book title(s)'">0 book titles</span>
+  </div>
+  <div class="book-grid" id="bookGrid">
+    <article class="book-card" th:each="b : ${catalogBooks}"
+             th:attr="data-title=${#strings.toLowerCase(b.title)},data-author=${#strings.toLowerCase(b.author)}">
+      <div class="book-cover-wrap">
+        <img class="book-cover" th:if="${b.imagePath != null}" th:src="@{${b.imagePath}}" th:alt="${b.title} + ' cover'">
+        <div class="book-cover-placeholder" th:unless="${b.imagePath != null}"><span>BOOK</span><small>Shelfwise Library</small></div>
+      </div>
+      <div class="book-card-body">
+        <h3 th:text="${b.title}">Book title</h3>
+        <p class="book-author" th:text="${b.author}">Author</p>
+        <span class="badge" th:classappend="${b.availableCopies > 0} ? 'badge-ok' : 'badge-bad'"
+              th:text="${b.availableCopies > 0} ? ${b.availableCopies} + ' available' : 'Currently unavailable'">Available</span>
+      </div>
+    </article>
+    <p class="empty catalog-empty" th:if="${#lists.isEmpty(catalogBooks)}">No books have been added to the catalog yet.</p>
+  </div>
+  <p id="noCatalogMatches" class="empty" hidden>No books match your search.</p>
+  <script>
+  function filterCatalogBooks() {
+    const term = document.getElementById('catalogFilter').value.trim().toLowerCase();
+    const cards = document.querySelectorAll('#bookGrid .book-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const match = card.dataset.title.includes(term) || card.dataset.author.includes(term);
+      card.hidden = !match;
+      if (match) visible++;
+    });
+    const noMatches = document.getElementById('noCatalogMatches');
+    if (noMatches) noMatches.hidden = visible !== 0 || cards.length === 0;
+  }
+  </script>
+</section>
+
+</body>
+</html>

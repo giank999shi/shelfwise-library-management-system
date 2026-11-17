@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My Dashboard')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <p class="eyebrow">Welcome back</p>
+  <h1 th:text="${hasMember} ? ${memberName} : ${username}">Reader</h1>
+  <p class="sub">Your borrowed books and due dates.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <div th:replace="~{fragments :: bookCatalog(${catalogBooks})}"></div>
+
+  <div class="msg msg-err" th:unless="${hasMember}">
+    This account isn't linked to a member record yet. Please ask the librarian.
+  </div>
+
+  <div th:if="${hasMember}">
+    <div class="stats">
+      <div class="stat"><span class="stat-ic tone-blue"><span th:replace="~{fragments :: icon('book')}"></span></span>
+        <div><b th:text="${#lists.size(borrowed)} + ' / ' + ${limit}">0 / 3</b><span class="lbl">Books borrowed</span></div></div>
+    </div>
+    <h2>Books I currently have</h2>
+    <table class="table">
+      <thead><tr><th>Book</th><th>Due</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr th:if="${#lists.isEmpty(borrowed)}"><td colspan="3" class="empty">You have no borrowed books.</td></tr>
+        <tr th:each="l : ${borrowed}">
+          <td th:text="${l.book.title}"></td>
+          <td th:text="${l.dueDate}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="${l.overdue} ? 'badge-bad' : (${l.dueSoon} ? 'badge-warn' : '')"
+                  th:text="${l.overdue} ? 'Overdue' : (${l.dueSoon} ? 'Due soon' : 'Borrowed')">Borrowed</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Menu</h2>
+  <div class="tiles">
+    <a class="tile" th:href="@{/books/search}"><span class="tile-ic tone-gold"><span th:replace="~{fragments :: icon('search')}"></span></span>
+      <span class="tile-txt"><strong>Search Books</strong><small>Check available copies</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+    <a class="tile" th:href="@{/my/history}"><span class="tile-ic tone-teal"><span th:replace="~{fragments :: icon('clock')}"></span></span>
+      <span class="tile-txt"><strong>My Borrowing History</strong><small>Due dates and status</small></span><span th:replace="~{fragments :: icon('arrow')}"></span></a>
+  </div>
+</main>
+</body>
+</html>

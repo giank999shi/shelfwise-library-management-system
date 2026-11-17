@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Reports')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Reports</h1>
+  <p class="sub">Choose a report. You can print it or export it as a CSV file that opens in Excel.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <div class="tiles">
+    <a class="tile" th:each="t : ${types}" th:href="@{/staff/reports/{slug}(slug=${t.slug})}">
+      <strong th:text="${t.title}">Report</strong>
+      <small th:text="${t.description}">Description</small>
+    </a>
+  </div>
+</main>
+</body>
+</html>

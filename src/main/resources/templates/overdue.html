@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Overdue Books')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Overdue Books</h1>
+  <p class="sub">Books past their due date, and books due within 2 days.</p>
+
+  <h2>Overdue</h2>
+  <table th:replace="~{fragments :: loanTable(${overdue}, true)}"></table>
+
+  <h2>Due soon</h2>
+  <table th:replace="~{fragments :: loanTable(${dueSoon}, true)}"></table>
+</main>
+</body>
+</html>

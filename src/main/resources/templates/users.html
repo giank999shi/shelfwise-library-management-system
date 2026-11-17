@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('User Accounts')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <div class="page-head">
+    <div>
+      <h1>User Accounts</h1>
+      <p class="sub">Everyone who can log in. Librarians are accounts with the Librarian role.</p>
+    </div>
+    <a class="btn" th:href="@{/admin/users/new}">+ Add account</a>
+  </div>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <div class="tabs">
+    <a th:href="@{/admin/users}" th:classappend="${roleFilter == null} ? 'on'">All</a>
+    <a th:each="r : ${roles}" th:href="@{/admin/users(role=${r.name()})}"
+       th:classappend="${roleFilter == r} ? 'on'" th:text="${r.label}">Role</a>
+  </div>
+
+  <table class="table">
+    <thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Linked member</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(users)}"><td colspan="6" class="empty">No accounts found.</td></tr>
+      <tr th:each="u : ${users}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.username}"></td>
+        <td th:text="${u.role.label}"></td>
+        <td th:text="${u.member != null ? u.member.name : '—'}"></td>
+        <td>
+          <span class="badge" th:classappend="${u.active} ? 'badge-ok' : 'badge-bad'"
+                th:text="${u.active} ? 'Active' : 'Disabled'">Active</span>
+        </td>
+        <td>
+          <div class="actions">
+            <a class="btn btn-ghost btn-sm" th:href="@{/admin/users/{id}/edit(id=${u.id})}">Edit</a>
+            <form class="inline" th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"
+                  onsubmit="return confirm('Delete this account? This cannot be undone.');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

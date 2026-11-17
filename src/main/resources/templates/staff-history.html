@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Borrowing History')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Borrowing History</h1>
+  <p class="sub">Search previous loans by member name or book title. Leave the search empty to see the latest 100 loans.</p>
+
+  <form th:action="@{/staff/history}" method="get" class="card form-row">
+    <div>
+      <label for="type">Search by</label>
+      <select id="type" name="type">
+        <option value="member" th:selected="${type == 'member'}">Member name</option>
+        <option value="book" th:selected="${type == 'book'}">Book title</option>
+      </select>
+    </div>
+    <div style="flex:1; min-width:200px">
+      <label for="keyword">Keyword</label>
+      <input id="keyword" name="keyword" type="text" th:value="${keyword}" style="width:100%">
+    </div>
+    <button class="btn" type="submit">Search</button>
+  </form>
+
+  <table th:replace="~{fragments :: loanTable(${history}, true)}"></table>
+</main>
+</body>
+</html>

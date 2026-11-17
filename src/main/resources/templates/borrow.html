@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Borrow / Return')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Borrow / Return</h1>
+  <p class="sub">Student: 3 books for 7 days. Teacher: 5 books for 14 days.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Borrow a book</h2>
+    <form th:action="@{/staff/loans/borrow}" method="post" class="form-row">
+      <div><label for="memberId">Member ID</label><input id="memberId" name="memberId" type="number" min="1" required></div>
+      <div><label for="bookId">Book ID</label><input id="bookId" name="bookId" type="number" min="1" required></div>
+      <button class="btn" type="submit">Borrow</button>
+    </form>
+    <p class="sub" style="margin:10px 0 0">Not sure of an ID? <a th:href="@{/books/search}" target="_blank">Search books</a> or <a th:href="@{/staff/members}" target="_blank">look up members</a>.</p>
+  </div>
+
+  <h2>Active loans</h2>
+  <table class="table">
+    <thead><tr><th>Loan ID</th><th>Member</th><th>Book</th><th>Due</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(activeLoans)}"><td colspan="6" class="empty">No active loans.</td></tr>
+      <tr th:each="l : ${activeLoans}">
+        <td th:text="${l.id}"></td>
+        <td th:text="${l.member.name}"></td>
+        <td th:text="${l.book.title}"></td>
+        <td th:text="${l.dueDate}"></td>
+        <td>
+          <span class="badge"
+                th:classappend="${l.overdue} ? 'badge-bad' : (${l.dueSoon} ? 'badge-warn' : '')"
+                th:text="${l.overdue} ? 'Overdue' : (${l.dueSoon} ? 'Due soon' : 'Borrowed')">Borrowed</span>
+        </td>
+        <td>
+          <form th:action="@{/staff/loans/return}" method="post"
+                onsubmit="return confirm('Confirm book return?');">
+            <input type="hidden" name="loanId" th:value="${l.id}">
+            <button class="btn btn-sm" type="submit">Return</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

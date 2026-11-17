@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Member')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1 th:text="${member.id != null} ? 'Edit member' : 'Add member'">Add member</h1>
+  <p class="sub">Student: 3 books for 7 days. Teacher: 5 books for 14 days.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <form class="card form-card" th:action="@{/staff/members/save}" method="post">
+    <input type="hidden" name="id" th:if="${member.id != null}" th:value="${member.id}">
+    <div class="field">
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" maxlength="100" required th:value="${member.name}" autofocus>
+    </div>
+    <div class="field">
+      <label for="memberType">Member type</label>
+      <select id="memberType" name="memberType" required>
+        <option th:each="t : ${types}" th:value="${t.name()}" th:text="${t.label}"
+                th:selected="${member.memberType == t}">Student</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="check">
+        <input type="checkbox" name="active" value="true" th:checked="${member.id == null or member.active}">
+        Active (can borrow books)
+      </label>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit">Save</button>
+      <a class="btn btn-ghost" th:href="@{/staff/members}">Cancel</a>
+    </div>
+  </form>
+</main>
+</body>
+</html>

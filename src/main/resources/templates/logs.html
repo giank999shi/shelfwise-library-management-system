@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Activity Logs')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>Activity Logs</h1>
+  <p class="sub">The latest 200 actions: logins, borrowing, returning, and changes to books, members and accounts.</p>
+
+  <table class="table">
+    <thead><tr><th>When</th><th>User</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(logs)}"><td colspan="3" class="empty">No activity yet.</td></tr>
+      <tr th:each="l : ${logs}">
+        <td th:text="${l.createdAtText}"></td>
+        <td th:text="${l.username}"></td>
+        <td th:text="${l.action}"></td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Account')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1 th:text="${u.id != null} ? 'Edit account' : 'Add account'">Add account</h1>
+  <p class="sub">Teacher and Student accounts must be linked to a member record.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <form class="card form-card" th:action="@{/admin/users/save}" method="post">
+    <input type="hidden" name="id" th:if="${u.id != null}" th:value="${u.id}">
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" maxlength="50" required
+             th:value="${u.username}" th:readonly="${u.id != null}">
+    </div>
+    <div class="field">
+      <label for="password" th:text="${u.id != null} ? 'New password (leave blank to keep the current one)' : 'Password'">Password</label>
+      <input id="password" name="password" type="password" minlength="6" autocomplete="new-password"
+             th:required="${u.id == null}">
+      <p class="hint">At least 6 characters.</p>
+    </div>
+    <div class="field">
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option th:each="r : ${roles}" th:value="${r.name()}" th:text="${r.label}" th:selected="${u.role == r}">Role</option>
+      </select>
+    </div>
+    <div class="field" id="memberField">
+      <label for="memberId">Linked member (Teacher / Student only)</label>
+      <select id="memberId" name="memberId">
+        <option value="">— choose —</option>
+        <option th:each="m : ${members}" th:value="${m.id}"
+                th:text="${m.name + ' (' + m.memberType.label + ', ID ' + m.id + ')'}"
+                th:selected="${selectedMemberId != null and selectedMemberId == m.id}">Member</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="check">
+        <input type="checkbox" name="active" value="true" th:checked="${u.id == null or u.active}">
+        Active (can log in)
+      </label>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit">Save</button>
+      <a class="btn btn-ghost" th:href="@{/admin/users}">Cancel</a>
+    </div>
+  </form>
+</main>
+<script>
+  // Only Teacher / Student accounts need a linked member.
+  (function () {
+    var role = document.getElementById('role');
+    var field = document.getElementById('memberField');
+    var select = document.getElementById('memberId');
+    function sync() {
+      var needs = role.value === 'TEACHER' || role.value === 'STUDENT';
+      field.style.display = needs ? '' : 'none';
+      select.disabled = !needs;
+    }
+    role.addEventListener('change', sync);
+    sync();
+  })();
+</script>
+</body>
+</html>

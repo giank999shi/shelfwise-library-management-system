@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Book')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1 th:text="${book.id != null} ? 'Edit book' : 'Add book'">Add book</h1>
+  <p class="sub">Fill in the book details and add an optional cover image.</p>
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <form class="card form-card" th:action="@{/staff/books/save}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" th:if="${book.id != null}" th:value="${book.id}">
+    <div class="field">
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" maxlength="200" required th:value="${book.title}" autofocus>
+    </div>
+    <div class="field">
+      <label for="author">Author</label>
+      <input id="author" name="author" type="text" maxlength="150" required th:value="${book.author}">
+    </div>
+    <div class="field">
+      <label for="totalCopies">Total copies</label>
+      <input id="totalCopies" name="totalCopies" type="number" min="1" max="1000" required
+             th:value="${book.totalCopies > 0} ? ${book.totalCopies} : 1">
+      <p class="hint" th:if="${book.id != null}">Available copies adjust automatically; borrowed copies are kept.</p>
+    </div>
+    <div class="field">
+      <label for="image">Book cover (JPG, PNG or WEBP; max 5 MB)</label>
+      <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" style="height:auto;padding:10px">
+      <p class="hint">Leave this empty when editing to keep the current cover.</p>
+      <img id="coverPreview" class="cover-preview" th:if="${book.imagePath != null}" th:src="@{${book.imagePath}}" alt="Current book cover">
+      <img id="newPreview" class="cover-preview" alt="Selected book cover preview" hidden>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit">Save</button>
+      <a class="btn btn-ghost" th:href="@{/staff/books}">Cancel</a>
+    </div>
+  </form>
+</main>
+<script>
+const imageInput = document.getElementById('image');
+const preview = document.getElementById('newPreview');
+imageInput.addEventListener('change', () => {
+  const file = imageInput.files[0];
+  if (!file) { preview.hidden = true; preview.removeAttribute('src'); return; }
+  preview.src = URL.createObjectURL(file);
+  preview.hidden = false;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My Borrowing History')}"></head>
+<body>
+<aside th:replace="~{fragments :: topbar}"></aside>
+<main>
+  <h1>My Borrowing History</h1>
+  <p class="sub">Every book you've borrowed, with due dates and status.</p>
+
+  <div class="msg msg-err" th:unless="${hasMember}">
+    This account isn't linked to a member record yet. Please ask the librarian.
+  </div>
+  <div th:if="${hasMember}">
+    <table th:replace="~{fragments :: loanTable(${history}, false)}"></table>
+  </div>
+</main>
+</body>
+</html>
